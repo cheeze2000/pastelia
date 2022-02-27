@@ -5,8 +5,8 @@ import (
 
 	"github.com/jackc/pgx/v4/pgxpool"
 
-	"github.com/cheeze2000/pastelia/backend/internal/slug"
-	"github.com/cheeze2000/pastelia/backend/internal/snippet"
+	"github.com/cheeze2000/pastelia/api/internal/slug"
+	"github.com/cheeze2000/pastelia/api/internal/snippet"
 )
 
 func CreateSnippet(dbpool *pgxpool.Pool, snippet *snippet.Snippet) (string, error) {

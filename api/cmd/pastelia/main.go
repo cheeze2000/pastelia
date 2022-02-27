@@ -3,20 +3,19 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/joho/godotenv"
-	"github.com/koron/go-spafs"
 
-	"github.com/cheeze2000/pastelia/backend/internal/postgres"
-	"github.com/cheeze2000/pastelia/backend/internal/snippet"
+	"github.com/cheeze2000/pastelia/api/internal/postgres"
+	"github.com/cheeze2000/pastelia/api/internal/snippet"
 )
 
 func createHandler(dbpool *pgxpool.Pool) func(http.ResponseWriter, *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if os.Getenv("MODE") == "development" {
+		if os.Getenv("API_MODE") == "development" {
 			w.Header().Add("Access-Control-Allow-Origin", "*")
 		}
 
@@ -58,20 +57,21 @@ func createHandler(dbpool *pgxpool.Pool) func(http.ResponseWriter, *http.Request
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		panic("Error loading .env file")
-	}
+	databaseUrl := fmt.Sprintf(
+		"postgres://%s:%s@postgres:5432/%s",
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		os.Getenv("POSTGRES_DB"),
+	)
 
-	dbpool, err := pgxpool.Connect(context.Background(), os.Getenv("DATABASE_URL"))
+	fmt.Println(databaseUrl)
+
+	dbpool, err := pgxpool.Connect(context.Background(), databaseUrl)
 	if err != nil {
 		panic("Unable to connect to database")
 	}
 
-	frontend := spafs.FileServer(http.Dir("../frontend/dist"))
-	go http.ListenAndServe(":3006", frontend)
-
-	backend := http.NewServeMux()
-	backend.HandleFunc("/", createHandler(dbpool))
-	http.ListenAndServe(":3009", backend)
+	api := http.NewServeMux()
+	api.HandleFunc("/", createHandler(dbpool))
+	http.ListenAndServe(":3000", api)
 }

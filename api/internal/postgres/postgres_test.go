@@ -6,9 +6,8 @@ import (
 	"testing"
 
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/joho/godotenv"
 
-	"github.com/cheeze2000/pastelia/backend/internal/snippet"
+	"github.com/cheeze2000/pastelia/api/internal/snippet"
 )
 
 func TestPostgres(t *testing.T) {
@@ -33,10 +32,5 @@ func TestPostgres(t *testing.T) {
 }
 
 func TestMain(m *testing.M) {
-	err := godotenv.Load("../../.env")
-	if err != nil {
-		panic("Error loading .env file")
-	}
-
 	os.Exit(m.Run())
 }
