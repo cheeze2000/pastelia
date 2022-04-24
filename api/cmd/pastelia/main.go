@@ -64,8 +64,6 @@ func main() {
 		os.Getenv("POSTGRES_DB"),
 	)
 
-	fmt.Println(databaseUrl)
-
 	dbpool, err := pgxpool.Connect(context.Background(), databaseUrl)
 	if err != nil {
 		panic("Unable to connect to database")
